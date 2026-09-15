@@ -11,12 +11,21 @@ const BUS_CONFIG = {
 
 let passengersData = {};
 let lastUpdate = null;
+const LOCAL_REGISTRATIONS_KEY = 'mega-help-26-registrations';
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   initializeBus();
   loadData();
   setInterval(loadData, UPDATE_INTERVAL);
+  document.getElementById('seatSearch').addEventListener('input', filterSeats);
+  document.getElementById('openRegistration').addEventListener('click', openRegistration);
+  document.getElementById('closeRegistration').addEventListener('click', closeRegistration);
+  document.getElementById('registrationForm').addEventListener('submit', handleRegistration);
+  document.getElementById('maioridade').addEventListener('change', toggleAuthorization);
+  document.getElementById('registrationModal').addEventListener('click', event => {
+    if (event.target.id === 'registrationModal') closeRegistration();
+  });
 });
 
 function initializeBus() {
@@ -100,6 +109,10 @@ function processData(data) {
       autorizacao: row[5] || ''
     };
   }
+
+  getLocalRegistrations().forEach(registration => {
+    passengersData[registration.vaga] = registration;
+  });
 }
 
 function updateUI() {
@@ -129,6 +142,102 @@ function updateStats() {
   document.getElementById('ocupadas').textContent = ocupadas;
   document.getElementById('disponivel').textContent = disponivel;
   document.getElementById('taxaOcupacao').textContent = taxaOcupacao + '%';
+  document.getElementById('heroDisponivel').textContent = disponivel;
+}
+
+function filterSeats(event) {
+  const query = event.target.value.trim().replace(/^0+/, '');
+  document.querySelectorAll('.seat-btn').forEach(button => {
+    const vaga = button.dataset.vaga;
+    button.classList.toggle('hidden', query !== '' && !vaga.includes(query));
+  });
+}
+
+function getLocalRegistrations() {
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_REGISTRATIONS_KEY)) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function openRegistration() {
+  populateRegistrationSeats();
+  const modal = document.getElementById('registrationModal');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  document.querySelector('#registrationForm input[name="nome"]').focus();
+}
+
+function closeRegistration() {
+  const modal = document.getElementById('registrationModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function populateRegistrationSeats() {
+  const select = document.getElementById('registrationSeat');
+  const availableSeats = Array.from({ length: BUS_CONFIG.totalVagas }, (_, index) => index + 1)
+    .filter(vaga => !passengersData[vaga]);
+  select.innerHTML = '<option value="">Selecione uma vaga disponível</option>';
+  availableSeats.forEach(vaga => {
+    const option = document.createElement('option');
+    option.value = vaga;
+    option.textContent = `Vaga ${String(vaga).padStart(2, '0')}${vaga <= BUS_CONFIG.totalSeats ? ' · assento' : ' · em pé'}`;
+    select.appendChild(option);
+  });
+}
+
+function toggleAuthorization(event) {
+  const field = document.getElementById('authorizationField');
+  field.classList.toggle('required-field', event.target.value === 'Não');
+  field.querySelector('input').required = event.target.value === 'Não';
+}
+
+async function handleRegistration(event) {
+  event.preventDefault();
+  const form = event.target;
+  const formMessage = document.getElementById('formMessage');
+  const formData = new FormData(form);
+  const registration = Object.fromEntries(formData.entries());
+  registration.vaga = Number(registration.vaga);
+  registration.autorizacao = registration.autorizacao || '';
+
+  if (passengersData[registration.vaga]) {
+    formMessage.textContent = 'Essa vaga acabou de ser ocupada. Escolha outra.';
+    formMessage.className = 'form-message error';
+    populateRegistrationSeats();
+    return;
+  }
+
+  const registrations = getLocalRegistrations().filter(item => item.email !== registration.email);
+  registrations.push(registration);
+  localStorage.setItem(LOCAL_REGISTRATIONS_KEY, JSON.stringify(registrations));
+  passengersData[registration.vaga] = registration;
+  updateUI();
+  formMessage.textContent = 'Cadastro confirmado. Preparando seu bilhete...';
+  formMessage.className = 'form-message success';
+  await generateTicket(registration);
+  form.reset();
+  toggleAuthorization({ target: document.getElementById('maioridade') });
+  closeRegistration();
+}
+
+async function generateTicket(registration) {
+  if (!window.jspdf || !window.QRCode) {
+    throw new Error('Bibliotecas do bilhete indisponíveis');
+  }
+  const qrData = JSON.stringify({ evento: 'Mega Help 26', nome: registration.nome, vaga: registration.vaga, rota: 'Mario Casassanta - Pavilhão do Anhembi' });
+  const qrImage = await QRCode.toDataURL(qrData, { width: 220, margin: 1, color: { dark: '#12231f', light: '#fffefa' } });
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: [90, 150] });
+  pdf.setFillColor(217, 243, 106); pdf.rect(0, 0, 90, 42, 'F');
+  pdf.setTextColor(18, 35, 31); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(18); pdf.text('MEGA HELP', 10, 16);
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9); pdf.text('26 · BILHETE DE EMBARQUE', 10, 23); pdf.text('ROTA 01 · 15 AGO 2026', 10, 31);
+  pdf.setFontSize(8); pdf.text('PASSAGEIRO', 10, 54); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(14); pdf.text(registration.nome.slice(0, 30), 10, 62);
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8); pdf.text('VAGA', 10, 76); pdf.text('SAÍDA', 47, 76); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(20); pdf.text(String(registration.vaga).padStart(2, '0'), 10, 87); pdf.setFontSize(10); pdf.text('Mario Casassanta', 47, 84); pdf.text('Pavilhão do Anhembi', 47, 91);
+  pdf.addImage(qrImage, 'PNG', 25, 98, 40, 40); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.text('Apresente este QR Code no embarque', 18, 145);
+  pdf.save(`mega-help-26-${registration.nome.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}.pdf`);
 }
 
 function showDetails(vaga) {

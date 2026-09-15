@@ -2,40 +2,52 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Help 26 - Controle de Vagas de Ônibus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Mega Help 26 | Mapa de embarque</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎗️ Mega Help 26</h1>
-            <p>Controle de Vagas de Ônibus</p>
-            <p class="route">Trajeto: Mario Casassanta → Pavilhão do Anhembi</p>
+    <div class="container" id="inicio">
+        <header class="topbar">
+            <a class="brand" href="#inicio" aria-label="Mega Help 26 - início">
+                <span class="brand-mark">MH</span>
+                <span><strong>Mega Help</strong><small>26 · transporte oficial</small></span>
+            </a>
+            <div class="topbar-meta"><span class="live-dot"></span><span>Monitoramento ao vivo</span></div>
         </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-copy">
+                    <p class="eyebrow">Rota 01 · 15 de agosto de 2026</p>
+                    <h1>Todo mundo a bordo.</h1>
+                    <p class="hero-text">Acompanhe a ocupação do ônibus em tempo real e encontre sua vaga em poucos segundos.</p>
+                    <div class="route-line"><span>Mario Casassanta</span><i aria-hidden="true"></i><span>Pavilhão do Anhembi</span></div>
+                    <button class="primary-btn" id="openRegistration">Cadastrar passageiro <span aria-hidden="true">↗</span></button>
+                </div>
+                <div class="hero-badge"><span class="badge-number" id="heroDisponivel">79</span><span>vagas<br>disponíveis</span></div>
+            </section>
 
         <div class="stats">
             <div class="stat-card">
-                <span class="stat-label">Total de Vagas</span>
+                <span class="stat-label">Capacidade total</span>
                 <span class="stat-value" id="totalVagas">79</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Ocupadas</span>
+                <span class="stat-label">Confirmadas</span>
                 <span class="stat-value ocupadas" id="ocupadas">0</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Disponíveis</span>
+                <span class="stat-label">Ainda livres</span>
                 <span class="stat-value disponivel" id="disponivel">79</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Taxa de Ocupação</span>
+                <span class="stat-label">Ocupação</span>
                 <span class="stat-value" id="taxaOcupacao">0%</span>
             </div>
         </div>
 
         <div class="bus-container">
-            <h2>Mapa do Ônibus</h2>
-            
+            <div class="section-heading"><div><p class="eyebrow">Selecione uma vaga</p><h2>Mapa do ônibus</h2></div><label class="search-box"><span aria-hidden="true">⌕</span><input id="seatSearch" type="search" placeholder="Buscar vaga" aria-label="Buscar vaga"></label></div>
             <div class="bus-info">
                 <div class="legend">
                     <div class="legend-item">
@@ -47,17 +59,20 @@
                         <span>Ocupado</span>
                     </div>
                 </div>
-                <div class="update-status" id="updateStatus">Carregando...</div>
+                <div class="update-status" id="updateStatus"><span class="status-pulse"></span> Carregando...</div>
             </div>
 
             <div class="bus">
-                <div class="bus-title">ASSENTOS NUMERADOS (01-44)</div>
+                <div class="bus-front"><span>Frente do ônibus</span><span>🚍</span></div>
+                <div class="bus-title">Assentos numerados <span>01—44</span></div>
                 <div class="seats-grid" id="seatsContainer"></div>
                 
-                <div class="bus-title standing-title">VAGAS EM PÉ (45-79)</div>
+                <div class="bus-title standing-title">Vagas em pé <span>45—79</span></div>
                 <div class="standing-grid" id="standingContainer"></div>
             </div>
         </div>
+        </main>
+        <footer><span>MEGA HELP 26</span><span>Dados atualizados automaticamente a cada 30 segundos</span></footer>
 
         <div class="details-panel" id="detailsPanel">
             <button class="close-btn" onclick="closeDetails()">✕</button>
@@ -66,8 +81,36 @@
                 <!-- Conteúdo carregado dinamicamente -->
             </div>
         </div>
+
+        <div class="modal-backdrop" id="registrationModal" aria-hidden="true">
+            <section class="registration-modal" role="dialog" aria-modal="true" aria-labelledby="registrationTitle">
+                <button class="close-btn" id="closeRegistration" type="button" aria-label="Fechar cadastro">✕</button>
+                <p class="eyebrow">Reserva de transporte</p>
+                <h2 id="registrationTitle">Garanta sua vaga.</h2>
+                <p class="modal-intro">Preencha seus dados. Ao concluir, o bilhete com QR Code será baixado em PDF.</p>
+                <form id="registrationForm">
+                    <div class="form-grid">
+                        <label class="field field-wide">Nome completo<input name="nome" required autocomplete="name" placeholder="Digite seu nome"></label>
+                        <label class="field">Telefone<input name="telefone" required autocomplete="tel" placeholder="(11) 99999-9999"></label>
+                        <label class="field">E-mail<input name="email" type="email" required autocomplete="email" placeholder="voce@email.com"></label>
+                        <label class="field">Maior de idade?
+                            <select name="maioridade" id="maioridade" required><option value="">Selecione</option><option value="Sim">Sim</option><option value="Não">Não</option></select>
+                        </label>
+                        <label class="field" id="authorizationField">Autorização do responsável<input name="autorizacao" placeholder="Nome do responsável"></label>
+                        <label class="field field-wide">Escolha sua vaga
+                            <select name="vaga" id="registrationSeat" required><option value="">Selecione uma vaga disponível</option></select>
+                        </label>
+                    </div>
+                    <label class="consent"><input type="checkbox" required> Confirmo que os dados estão corretos e autorizo seu uso para o embarque.</label>
+                    <p class="form-message" id="formMessage" role="status"></p>
+                    <button class="primary-btn submit-btn" type="submit">Confirmar e gerar bilhete <span aria-hidden="true">↓</span></button>
+                </form>
+            </section>
+        </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
