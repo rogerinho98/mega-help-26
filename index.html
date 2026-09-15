@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Help 26 - Controle de Vagas de Ônibus</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎗️ Mega Help 26</h1>
+            <p>Controle de Vagas de Ônibus</p>
+            <p class="route">Trajeto: Mario Casassanta → Pavilhão do Anhembi</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-label">Total de Vagas</span>
+                <span class="stat-value" id="totalVagas">79</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Ocupadas</span>
+                <span class="stat-value ocupadas" id="ocupadas">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Disponíveis</span>
+                <span class="stat-value disponivel" id="disponivel">79</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Taxa de Ocupação</span>
+                <span class="stat-value" id="taxaOcupacao">0%</span>
+            </div>
+        </div>
+
+        <div class="bus-container">
+            <h2>Mapa do Ônibus</h2>
+            
+            <div class="bus-info">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="seat available"></div>
+                        <span>Disponível</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="seat occupied"></div>
+                        <span>Ocupado</span>
+                    </div>
+                </div>
+                <div class="update-status" id="updateStatus">Carregando...</div>
+            </div>
+
+            <div class="bus">
+                <div class="bus-title">ASSENTOS NUMERADOS (01-44)</div>
+                <div class="seats-grid" id="seatsContainer"></div>
+                
+                <div class="bus-title standing-title">VAGAS EM PÉ (45-79)</div>
+                <div class="standing-grid" id="standingContainer"></div>
+            </div>
+        </div>
+
+        <div class="details-panel" id="detailsPanel">
+            <button class="close-btn" onclick="closeDetails()">✕</button>
+            <h3>Detalhes da Vaga</h3>
+            <div class="details-content" id="detailsContent">
+                <!-- Conteúdo carregado dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
