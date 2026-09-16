@@ -4,7 +4,7 @@ Aplicação web interativa para gestão e visualização em tempo real das vagas
 
 ## 🚀 Funcionalidades
 
-- **Mapa Visual do Ônibus:** Divisão clara entre assentos numerados (01–44) e vagas em pé (45–79).
+- **Mapa Visual do Ônibus:** Divisão clara entre assentos numerados (01–44) e vagas em pé (45–100).
 - **Integração Dinâmica:** Consome dados em tempo real de uma planilha do Google Sheets publicada como CSV.
 - **Painel de Detalhes:** Clique em qualquer vaga ocupada para visualizar nome, telefone, e-mail e status de maioridade/autorização.
 - **Design Responsivo:** Interface otimizada para dispositivos móveis e desktop.
@@ -58,7 +58,7 @@ A planilha Google Sheets deve conter as seguintes colunas:
 
 | Coluna | Descrição |
 |--------|-----------|
-| **Vaga** | Número da vaga (01-79) |
+| **Vaga** | Número da vaga (01-100) |
 | **Nome** | Nome do passageiro |
 | **Telefone** | Telefone de contato |
 | **Email** | E-mail do passageiro |
@@ -98,7 +98,7 @@ Modifique os valores em `script.js`:
 const BUS_CONFIG = {
   seatsPerRow: 4,
   totalSeats: 44,
-  standingSpaces: 35,
+  standingSpaces: 56,
   updateInterval: 30000 // 30 segundos
 };
 ```

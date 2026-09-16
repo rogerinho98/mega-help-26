@@ -5,8 +5,8 @@ const UPDATE_INTERVAL = 30000; // 30 segundos
 const BUS_CONFIG = {
   seatsPerRow: 4,
   totalSeats: 44,
-  standingSpaces: 35,
-  totalVagas: 79
+  standingSpaces: 56,
+  totalVagas: 100
 };
 
 const PRELOADED_PASSENGERS = [
@@ -67,7 +67,7 @@ function initializeBus() {
     seatsContainer.appendChild(btn);
   }
 
-  // Criar vagas em pé (45-79)
+  // Criar vagas em pé (45-100)
   for (let i = BUS_CONFIG.totalSeats + 1; i <= BUS_CONFIG.totalVagas; i++) {
     const btn = createSeatButton(i);
     standingContainer.appendChild(btn);

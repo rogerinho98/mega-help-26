@@ -21,16 +21,21 @@
                     <p class="eyebrow">Rota 01 · 15 de agosto de 2026</p>
                     <h1>Todo mundo a bordo.</h1>
                     <p class="hero-text">Acompanhe a ocupação do ônibus em tempo real e encontre sua vaga em poucos segundos.</p>
+                    <div class="event-info" aria-label="Informações de saída e retorno">
+                        <div class="event-info-item"><span class="event-info-label">Saída</span><strong>10h00</strong><span>Colégio Mario Casassanta</span></div>
+                        <div class="event-info-divider" aria-hidden="true"></div>
+                        <div class="event-info-item"><span class="event-info-label">Retorno</span><strong>19h00</strong><span>Após o encerramento do evento</span></div>
+                    </div>
                     <div class="route-line"><span>Mario Casassanta</span><i aria-hidden="true"></i><span>Pavilhão do Anhembi</span></div>
                     <button class="primary-btn" id="openRegistration">Cadastrar passageiro <span aria-hidden="true">↗</span></button>
                 </div>
-                <div class="hero-badge"><span class="badge-number" id="heroDisponivel">79</span><span>vagas<br>disponíveis</span></div>
+                <div class="hero-badge"><span class="badge-number" id="heroDisponivel">48</span><span>vagas<br>disponíveis</span></div>
             </section>
 
         <div class="stats">
             <div class="stat-card">
                 <span class="stat-label">Capacidade total</span>
-                <span class="stat-value" id="totalVagas">79</span>
+                <span class="stat-value" id="totalVagas">100</span>
             </div>
             <div class="stat-card">
                 <span class="stat-label">Confirmadas</span>
@@ -38,7 +43,7 @@
             </div>
             <div class="stat-card">
                 <span class="stat-label">Ainda livres</span>
-                <span class="stat-value disponivel" id="disponivel">79</span>
+                <span class="stat-value disponivel" id="disponivel">48</span>
             </div>
             <div class="stat-card">
                 <span class="stat-label">Ocupação</span>
@@ -67,7 +72,7 @@
                 <div class="bus-title">Assentos numerados <span>01—44</span></div>
                 <div class="seats-grid" id="seatsContainer"></div>
                 
-                <div class="bus-title standing-title">Vagas em pé <span>45—79</span></div>
+                <div class="bus-title standing-title">Vagas em pé <span>45—100</span></div>
                 <div class="standing-grid" id="standingContainer"></div>
             </div>
         </div>
